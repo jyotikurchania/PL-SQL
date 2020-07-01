@@ -1,0 +1,83 @@
+--Name = Jyoti Kurchania
+-- Competency 2.1 HandsOn 1
+--Reviewing SQL and Data in the Brewbean's Database
+
+-- Problem #1
+	SELECT DISTINCT idproduct FROM bb_basketitem 
+	ORDER BY idproduct;
+
+-- Problem #2
+-- Traditional join
+	SELECT bi.idbasketitem, p.idproduct, p.productname, p.description
+	FROM bb_basketitem bi, bb_product p
+	WHERE bi.idproduct= p.idproduct;
+
+	SELECT bi.idbasketitem, p.idproduct, p.productname,
+	cast (p.description as varchar2(20)) "truncated description"
+	FROM bb_basketitem bi, bb_product p
+	WHERE bi.idproduct= p.idproduct;
+  
+--ANSI join
+	SELECT idbasketitem, idproduct, productname, description
+	FROM bb_basketitem INNER JOIN bb_product 
+        USING(idproduct);
+	
+-- Problem #3
+	SELECT idbasketitem, idproduct, productname, description, lastname
+	FROM bb_product 
+	INNER JOIN bb_basketitem USING(idproduct)
+	INNER JOIN bb_basket USING(idbasket)
+	INNER JOIN bb_shopper USING(idshopper);
+	
+-- Problem #4
+	SELECT idbasket, idshopper, to_char(dtordered, 'Month DD, YYYY') dtordered
+  	FROM bb_basket 
+	WHERE dtordered like '%FEB%';
+
+-- Problem #5
+	SELECT idproduct, SUM(quantity) "Total Sold"
+	FROM bb_basketitem
+	GROUP BY idproduct;
+
+-- Problem #6
+	SELECT idproduct, SUM(quantity) "Total Sold"
+	FROM bb_basketitem
+	GROUP BY idproduct
+	HAVING SUM(quantity)<3;
+
+-- Problem #7
+	SELECT  idproduct, productname,price 
+	FROM bb_product 
+	GROUP BY idproduct, productname,price
+	HAVING price > (SELECT AVG(price) FROM bb_product);
+	
+-- Problem #8
+	CREATE TABLE BB_Contacts
+	(Con_id NUMBER(4) CONSTRAINT pk_con_id PRIMARY KEY,
+	Company_Name VARCHAR2(30) NOT NULL,
+	Email VARCHAR2(30),
+	Last_date DATE DEFAULT SYSDATE,
+	Con_cnt NUMBER(3) CONSTRAINT CHK_Con_cnt CHECK(Con_cnt>0));
+	COMMIT;
+	
+	DESC BB_Contacts;
+
+-- Problem #9
+	INSERT INTO BB_Contacts 
+	VALUES(1001, 'abc', 'abc@gmail.com', sysdate, 2);
+	INSERT INTO BB_Contacts 
+	VALUES(1002, 'def', 'def@gmail.com', sysdate, 3);
+	Commit;
+	
+	SELECT * FROM BB_Contacts;
+
+-- Problem #10
+	UPDATE BB_Contacts
+	SET Email = 'xyz@gmail.com'
+	WHERE Con_id=1001;
+	
+	SELECT * FROM BB_Contacts;
+	ROLLBACK;
+	SELECT * FROM BB_Contacts;
+
+	COMMIT;
